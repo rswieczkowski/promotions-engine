@@ -42,8 +42,6 @@ class ProductsController extends AbstractController
             'discounted_price' => 50,
             'promotion_id' => 3,
             'promotion_name' => 'Black Friday half price sale'
-
-
         ], 200);
     }
 }
