@@ -36,11 +36,13 @@ class ProductsController extends AbstractController
         }
 
         // 1. Deserialize json data into a enquiryDTO
+        /* @var LowestPriceEnquiry $lowestPriceEnquiry */
         $lowestPriceEnquiry =  $serializer->deserialize($request->getContent(), LowestPriceEnquiry::class, 'json');
 
         // 2. Pass enquiry into a promotions filter
         // the appropriate promotion will be applied
         // 3. Return the modified Enquiry
+        $lowestPriceEnquiry->
 
         return new JsonResponse([
             'quantity' => 5,
