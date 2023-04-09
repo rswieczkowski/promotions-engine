@@ -27,7 +27,6 @@ class ProductsController extends AbstractController
     public function promotions()
     {
     }
-
     #[Route('/products/{id}/lowest-price', name: 'lowest-price', methods: 'POST')]
     public function lowestPrice(
         Request $request,
