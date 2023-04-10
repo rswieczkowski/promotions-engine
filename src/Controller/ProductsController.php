@@ -22,8 +22,8 @@ class ProductsController extends AbstractController
         private ProductRepository $repository,
         private EntityManagerInterface $entityManager
     ) {
-
     }
+
     #[Route('/products', name: 'products')]
     public function index(): JsonResponse
     {
@@ -37,14 +37,14 @@ class ProductsController extends AbstractController
     public function promotions()
     {
     }
+
     #[Route('/products/{id}/lowest-price', name: 'lowest-price', methods: 'POST')]
     public function lowestPrice(
         Request $request,
         int $id,
         DTOSerializer $serializer,
         PromotionsFilterInterface $promotionsFilter
-    ): Response
-    {
+    ): Response {
         if ($request->headers->has('force_fail')) {
             return new JsonResponse([
                 'error' => 'Promotions Engine failure message'
@@ -63,12 +63,11 @@ class ProductsController extends AbstractController
             date_create_immutable($lowestPriceEnquiry->getRequestDate())
         );
 
-        dd($promotions);
-        $modifiedEnquiry = $promotionsFilter->apply($lowestPriceEnquiry, $promotions );
+        $modifiedEnquiry = $promotionsFilter->apply($lowestPriceEnquiry, ...$promotions);
 
         $responseContent = $serializer->serialize($modifiedEnquiry, 'json');
 
-        return new Response($responseContent, 200);
+        return new Response($responseContent, 200, ['Content-Type' => 'application/json']);
     }
 
 }
