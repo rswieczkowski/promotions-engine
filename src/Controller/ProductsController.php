@@ -23,7 +23,7 @@ class ProductsController extends AbstractController
 
     public function __construct(
         private ProductRepository $repository,
-        private EntityManagerInterface $entityManager
+         EntityManagerInterface $entityManager
     ) {
     }
 
