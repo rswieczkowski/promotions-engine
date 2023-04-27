@@ -63,7 +63,7 @@ class ProductsController extends AbstractController
 
         $lowestPriceEnquiry->setProduct($product);
 
-        $promotions = $promotionCache->findValidforProduct($product, $lowestPriceEnquiry->getRequestDate());
+        $promotions = $promotionCache->findValidForProduct($product, $lowestPriceEnquiry->getRequestDate());
 
 
 

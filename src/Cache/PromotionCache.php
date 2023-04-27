@@ -20,9 +20,14 @@ class PromotionCache
     public function findValidForProduct(Product $product, string $requestDate): ?array
     {
         $key = sprintf('valid_for_product-%d', $product->getId());
+
+
+
         return $this->cache->get(
             $key,
             function (ItemInterface $item) use ($product, $requestDate) {
+                $item->expiresAfter(3600);
+                var_dump('miss');
                 return $this->repository->findValidForProduct(
                     $product,
                     date_create_immutable($requestDate)
