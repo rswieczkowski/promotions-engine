@@ -3,35 +3,30 @@
 namespace App\EventListener;
 
 
-use Symfony\Component\HttpFoundation\JsonResponse;
+use App\Service\ServiceException;
+use App\Service\ServiceExceptionData;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpKernel\Event\ExceptionEvent;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
+
 
 class ExceptionListener
 {
 
     public function onKernelException(ExceptionEvent $event): void
     {
-      $exception =  $event->getThrowable();
+        $exception = $event->getThrowable();
 
-      $response = new JsonResponse([
-          'type' => 'ConstraintViolationList',
-          'title'=> 'An error occurred',
-          'description' => 'This value should be positive',
-          'violation' => [
-              'propertyPath' => 'quantity',
-              'message' => 'This value should be positive'
-          ]
-      ]);
-        if($exception instanceof HttpExceptionInterface) {
-            $response->setStatusCode($exception->getStatusCode());
+
+        if ($exception instanceof ServiceException) {
+            $exceptionData = $exception->getExceptionData();
         } else {
-            $response->setStatusCode(Response::HTTP_INTERNAL_SERVER_ERROR);
+           $statusCode = Response::HTTP_INTERNAL_SERVER_ERROR;
+           $exceptionData = new ServiceExceptionData($statusCode, $exception->getMessage());
         }
-
+        $response = new JsonResponse($exceptionData->toArray());
         $event->setResponse($response);
-
     }
 
 
