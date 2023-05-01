@@ -3,13 +3,16 @@
 namespace App\Repository;
 
 use App\Entity\Product;
+use App\Service\ServiceException;
+use App\Service\ServiceExceptionData;
 use DateTimeInterface;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\Exception\ORMException;
+use Doctrine\ORM\OptimisticLockException;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Contracts\Cache\CacheInterface;
 
 /**
- * @extends ServiceEntityRepository<Product>
  *
  * @method Product|null find($id, $lockMode = null, $lockVersion = null)
  * @method Product|null findOneBy(array $criteria, array $orderBy = null)
@@ -22,9 +25,33 @@ class ProductRepository extends ServiceEntityRepository
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Product::class);
-
     }
 
+    public function findOrFail(int $id): Product
+    {
+        $product = $this->find($id);
+
+        if (!$product) {
+            $exceptionData = new ServiceExceptionData(404, 'Product Not Found');
+
+            throw new ServiceException($exceptionData);
+        }
+
+        return $product;
+    }
+
+
+    /**
+     * @throws ORMException
+     * @throws OptimisticLockException
+     */
+    public function add(Product $entity, bool $flush = true): void
+    {
+        $this->_em->persist($entity);
+        if ($flush) {
+            $this->_em->flush();
+        }
+    }
 
 
     public function save(Product $entity, bool $flush = false): void
