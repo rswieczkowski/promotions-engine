@@ -23,7 +23,7 @@ class ProductsController extends AbstractController
 
     public function __construct(
         private ProductRepository $repository,
-         EntityManagerInterface $entityManager
+        EntityManagerInterface $entityManager
     ) {
     }
 
@@ -49,23 +49,14 @@ class ProductsController extends AbstractController
         PromotionsFilterInterface $promotionsFilter,
         PromotionCache $promotionCache
     ): Response {
-        if ($request->headers->has('force_fail')) {
-            return new JsonResponse([
-                'error' => 'Promotions Engine failure message'
-            ], $request->headers->get('force_fail'));
-        }
-
-
         /* @var LowestPriceEnquiry $lowestPriceEnquiry */
         $lowestPriceEnquiry = $serializer->deserialize($request->getContent(), LowestPriceEnquiry::class, 'json');
 
-        $product = $this->repository->find($id);
+        $product = $this->repository->findOrFail($id);
 
         $lowestPriceEnquiry->setProduct($product);
 
         $promotions = $promotionCache->findValidForProduct($product, $lowestPriceEnquiry->getRequestDate());
-
-
 
 
         $modifiedEnquiry = $promotionsFilter->apply($lowestPriceEnquiry, ...$promotions);
